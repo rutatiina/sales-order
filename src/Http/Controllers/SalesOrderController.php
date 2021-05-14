@@ -29,8 +29,6 @@ class SalesOrderController extends Controller
     use ItemsSelect2DataTrait; //calls AccountingTrait
     use TxnItem; // >> get the item attributes template << !!important
 
-    private  $txnEntreeSlug = 'order';
-
     public function __construct()
     {
         $this->middleware('permission:sales-orders.view');
@@ -119,7 +117,6 @@ class SalesOrderController extends Controller
     public function store(Request $request)
 	{
         $TxnStore = new TxnStore();
-        $TxnStore->txnEntreeSlug = $this->txnEntreeSlug;
         $TxnStore->txnInsertData = $request->all();
         $insert = $TxnStore->run();
 
@@ -175,7 +172,6 @@ class SalesOrderController extends Controller
     public function update(Request $request)
     {
         $TxnStore = new TxnUpdate();
-        $TxnStore->txnEntreeSlug = $this->txnEntreeSlug;
         $TxnStore->txnInsertData = $request->all();
         $insert = $TxnStore->run();
 
@@ -245,9 +241,6 @@ class SalesOrderController extends Controller
         $TxnCopy = new TxnCopy();
         $txnAttributes = $TxnCopy->run($id);
 
-        $TxnNumber = new TxnNumber();
-        $txnAttributes['number'] = $TxnNumber->run($this->txnEntreeSlug);
-
         $data = [
             'pageTitle' => 'Copy Sales Order', #required
             'pageAction' => 'Copy', #required
@@ -266,8 +259,7 @@ class SalesOrderController extends Controller
         $txns = Transaction::setRoute('show', route('accounting.sales.sales-orders.show', '_id_'))
 			->setRoute('edit', route('accounting.sales.sales-orders.edit', '_id_'))
 			->setSortBy($request->sort_by)
-			->paginate(false)
-			->findByEntree($this->txnEntreeSlug);
+			->paginate(false);
 
         return Datatables::of($txns)->make(true);
     }
