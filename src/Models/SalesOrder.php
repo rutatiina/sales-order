@@ -128,24 +128,14 @@ class SalesOrder extends Model
         }
     }
 
-    public function debit_account()
+    public function financial_account()
     {
-        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'id', 'debit');
-    }
-
-    public function credit_account()
-    {
-        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'id', 'credit');
+        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'id', 'financial_account_code');
     }
 
     public function items()
     {
         return $this->hasMany('Rutatiina\SalesOrder\Models\SalesOrderItem', 'sales_order_id')->orderBy('id', 'asc');
-    }
-
-    public function ledgers()
-    {
-        return $this->hasMany('Rutatiina\SalesOrder\Models\SalesOrderLedger', 'sales_order_id')->orderBy('id', 'asc');
     }
 
     public function comments()

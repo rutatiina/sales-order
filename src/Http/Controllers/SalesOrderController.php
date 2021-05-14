@@ -3,30 +3,21 @@
 namespace Rutatiina\SalesOrder\Http\Controllers;
 
 use Rutatiina\SalesOrder\Models\Setting;
-use URL;
+use Rutatiina\SalesOrder\Services\SalesOrderService;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Request as FacadesRequest;
-use Illuminate\Support\Facades\View;
 use Rutatiina\SalesOrder\Models\SalesOrder;
-use Rutatiina\Item\Traits\ItemsSelect2DataTrait;
 use Rutatiina\Contact\Traits\ContactTrait;
 use Yajra\DataTables\Facades\DataTables;
 
-use Rutatiina\SalesOrder\Classes\Store as TxnStore;
-use Rutatiina\SalesOrder\Classes\Approve as TxnApprove;
-use Rutatiina\SalesOrder\Classes\Read as TxnRead;
-use Rutatiina\SalesOrder\Classes\Copy as TxnCopy;
-use Rutatiina\SalesOrder\Classes\Number as TxnNumber;
 use Rutatiina\SalesOrder\Traits\Item as TxnItem;
-use Rutatiina\SalesOrder\Classes\Edit as TxnEdit;
-use Rutatiina\SalesOrder\Classes\Update as TxnUpdate;
 
 class SalesOrderController extends Controller
 {
     use ContactTrait;
-    use ItemsSelect2DataTrait; //calls AccountingTrait
     use TxnItem; // >> get the item attributes template << !!important
 
     public function __construct()
@@ -116,53 +107,59 @@ class SalesOrderController extends Controller
 
     public function store(Request $request)
 	{
-        $TxnStore = new TxnStore();
-        $TxnStore->txnInsertData = $request->all();
-        $insert = $TxnStore->run();
+        //print_r($request->all()); exit;
 
-        if ($insert == false) {
+        $storeService = SalesOrderService::store($request);
+
+        if ($storeService == false)
+        {
             return [
-                'status'    => false,
-                'messages'   => $TxnStore->errors
+                'status' => false,
+                'messages' => SalesOrderService::$errors
             ];
         }
 
         return [
-            'status'    => true,
-            'messages'   => ['Sales Order saved'],
-            'number'    => 0,
-            'callback'  => URL::route('sales-orders.show', [$insert->id], false)
+            'status' => true,
+            'messages' => ['Sales Order saved'],
+            'number' => 0,
+            'callback' => URL::route('sales-orders.show', [$storeService->id], false)
         ];
-
     }
 
     public function show($id)
     {
         //load the vue version of the app
-        if (!FacadesRequest::wantsJson()) {
+        if (!FacadesRequest::wantsJson())
+        {
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        if (FacadesRequest::wantsJson()) {
-            $TxnRead = new TxnRead();
-            return $TxnRead->run($id);
-        }
+        $txn = SalesOrder::findOrFail($id);
+        $txn->load('contact', 'financial_account', 'items.taxes');
+        $txn->setAppends([
+            'taxes',
+            'number_string',
+            'total_in_words',
+        ]);
+
+        return $txn->toArray();
     }
 
     public function edit($id)
     {
         //load the vue version of the app
-        if (!FacadesRequest::wantsJson()) {
+        if (!FacadesRequest::wantsJson())
+        {
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        $TxnEdit = new TxnEdit();
-        $txnAttributes = $TxnEdit->run($id);
+        $txnAttributes = SalesOrderService::edit($id);
 
         $data = [
             'pageTitle' => 'Edit Sales order', #required
             'pageAction' => 'Edit', #required
-            'txnUrlStore' => '/sales-orders/'.$id, #required
+            'txnUrlStore' => '/sales-orders/' . $id, #required
             'txnAttributes' => $txnAttributes, #required
         ];
 
@@ -171,86 +168,90 @@ class SalesOrderController extends Controller
 
     public function update(Request $request)
     {
-        $TxnStore = new TxnUpdate();
-        $TxnStore->txnInsertData = $request->all();
-        $insert = $TxnStore->run();
+        //print_r($request->all()); exit;
 
-        if ($insert == false) {
+        $storeService = SalesOrderService::update($request);
+
+        if ($storeService == false)
+        {
             return [
-                'status'    => false,
-                'messages'  => $TxnStore->errors
+                'status' => false,
+                'messages' => SalesOrderService::$errors
             ];
         }
 
         return [
-            'status'    => true,
-            'messages'  => ['Sales Order updated'],
-            'number'    => 0,
-            'callback'  => URL::route('sales-orders.show', [$insert->id], false)
+            'status' => true,
+            'messages' => ['Sales order updated'],
+            'number' => 0,
+            'callback' => URL::route('sales-orders.show', [$storeService->id], false)
         ];
     }
 
     public function destroy($id)
 	{
-		$delete = SalesOrder::delete($id);
+        $destroy = SalesOrderService::destroy($id);
 
-		if ($delete) {
-			return [
-				'status' => true,
-				'message' => 'Sales Order deleted',
-			];
-		} else {
-			return [
-				'status' => false,
-				'message' => ['Error: failed to deleted Sales order']
-			];
-		}
+        if ($destroy)
+        {
+            return [
+                'status' => true,
+                'messages' => ['Sales order deleted'],
+                'callback' => URL::route('sales-orders.index', [], false)
+            ];
+        }
+        else
+        {
+            return [
+                'status' => false,
+                'messages' => SalesOrderService::$errors
+            ];
+        }
 	}
 
 	#-----------------------------------------------------------------------------------
 
     public function approve($id)
     {
-        $TxnApprove = new TxnApprove();
-        $approve = $TxnApprove->run($id);
+        $approve = SalesOrderService::approve($id);
 
-        if ($approve == false) {
+        if ($approve == false)
+        {
             return [
-                'status'    => false,
-                'messages'   => $TxnApprove->errors
+                'status' => false,
+                'messages' => SalesOrderService::$errors
             ];
         }
 
         return [
-            'status'    => true,
-            'messages'   => ['Sales Order Approved'],
+            'status' => true,
+            'messages' => ['Sales order Approved'],
         ];
-
     }
-
-    public function process()
-	{}
 
     public function copy($id)
     {
         //load the vue version of the app
-        if (!FacadesRequest::wantsJson()) {
+        if (!FacadesRequest::wantsJson())
+        {
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        $TxnCopy = new TxnCopy();
-        $txnAttributes = $TxnCopy->run($id);
+        $txnAttributes = SalesOrderService::copy($id);
 
         $data = [
-            'pageTitle' => 'Copy Sales Order', #required
+            'pageTitle' => 'Copy Sales order', #required
             'pageAction' => 'Copy', #required
-            'txnUrlStore' => '/financial-accounts/sales/sales-orders', #required
+            'txnUrlStore' => '/sales-orders', #required
             'txnAttributes' => $txnAttributes, #required
         ];
 
-        if (FacadesRequest::wantsJson()) {
-            return $data;
-        }
+        return $data;
+    }
+
+    public function process()
+    {
+        //
     }
 
     public function datatables(Request $request)

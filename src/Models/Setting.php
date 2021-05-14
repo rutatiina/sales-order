@@ -70,14 +70,9 @@ class Setting extends Model
         return $attributes;
     }
 
-    public function financial_account_to_debit()
+    public function financial_account()
     {
-        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'code', 'debit_financial_account_code');
-    }
-
-    public function financial_account_to_credit()
-    {
-        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'code', 'credit_financial_account_code');
+        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'code', 'financial_account_code');
     }
 
 }

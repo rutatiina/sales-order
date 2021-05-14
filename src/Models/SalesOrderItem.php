@@ -36,19 +36,14 @@ class SalesOrderItem extends Model
         static::addGlobalScope(new TenantIdScope);
     }
 
-    public function getTaxesAttribute($value)
+    public function sales_order()
     {
-        $_array_ = json_decode($value);
-        if (is_array($_array_)) {
-            return $_array_;
-        } else {
-            return [];
-        }
+        return $this->belongsTo('Rutatiina\SalesOrder\Models\SalesOrder', 'sales_order_id', 'id');
     }
 
-    public function txn()
+    public function taxes()
     {
-        return $this->belongsTo('Rutatiina\FinancialAccounting\Models\Txn', 'txn_id');
+        return $this->hasMany('Rutatiina\SalesOrder\Models\SalesOrderItemTax', 'sales_order_item_id', 'id');
     }
 
 }
