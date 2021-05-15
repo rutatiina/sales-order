@@ -37,7 +37,6 @@ class SalesOrder extends Model
     protected $appends = [
         'number_string',
         'total_in_words',
-        'contact_id',
     ];
 
     /**
@@ -93,9 +92,7 @@ class SalesOrder extends Model
         $attributes['items'] = [];
         $attributes['ledgers'] = [];
         $attributes['comments'] = [];
-        $attributes['debit_contact'] = [];
-        $attributes['credit_contact'] = [];
-        $attributes['recurring'] = [];
+        $attributes['contact'] = [];
 
         return $attributes;
     }
@@ -116,18 +113,6 @@ class SalesOrder extends Model
         return ucfirst($f->format($this->total));
     }
 
-    public function getContactIdAttribute()
-    {
-        if ($this->debit_contact_id == $this->credit_contact_id)
-        {
-            return $this->debit_contact_id;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     public function financial_account()
     {
         return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'id', 'financial_account_code');
@@ -145,17 +130,7 @@ class SalesOrder extends Model
 
     public function contact()
     {
-        return $this->hasOne('Rutatiina\Contact\Models\Contact', 'id', 'debit_contact_id');
-    }
-
-    public function debit_contact()
-    {
-        return $this->hasOne('Rutatiina\Contact\Models\Contact', 'id', 'debit_contact_id');
-    }
-
-    public function credit_contact()
-    {
-        return $this->hasOne('Rutatiina\Contact\Models\Contact', 'id', 'credit_contact_id');
+        return $this->hasOne('Rutatiina\Contact\Models\Contact', 'id', 'contact_id');
     }
 
     public function item_taxes()
