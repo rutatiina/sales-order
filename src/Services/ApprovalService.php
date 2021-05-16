@@ -9,10 +9,17 @@ trait ApprovalService
 {
     public static function run($data)
     {
-        $status = strtolower($data['status']);
+        if (strtolower($data['status']) == 'draft')
+        {
+            //cannot update balances for drafts
+            return false;
+        }
 
-        //do not continue if txn status is draft
-        if ($status == 'draft') return true;
+        if ($data['balances_where_updated'] == 1)
+        {
+            //cannot update balances for task already completed
+            return false;
+        }
 
         //inventory checks and inventory balance update if needed
         //$this->inventory(); //currentlly inventory update for sales order is disabled
