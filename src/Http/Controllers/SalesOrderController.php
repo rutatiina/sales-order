@@ -72,7 +72,7 @@ class SalesOrderController extends Controller
         $txnAttributes = (new SalesOrder())->rgGetAttributes();
 
         $txnAttributes['number'] = $this->nextNumber();
-        $txnAttributes['status'] = 'Approved';
+        $txnAttributes['status'] = 'approved';
         $txnAttributes['contact_id'] = '';
         $txnAttributes['contact'] = json_decode('{"currencies":[]}'); #required
         $txnAttributes['date'] = date('Y-m-d');
@@ -225,7 +225,7 @@ class SalesOrderController extends Controller
 
         return [
             'status' => true,
-            'messages' => ['Sales order Approved'],
+            'messages' => ['Sales order approved'],
         ];
     }
 
