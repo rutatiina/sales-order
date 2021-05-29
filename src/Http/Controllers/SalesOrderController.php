@@ -52,14 +52,6 @@ class SalesOrderController extends Controller
         ];
     }
 
-    private function nextNumber()
-    {
-        $txn = SalesOrder::latest()->first();
-        $settings = Setting::first();
-
-        return $settings->number_prefix.(str_pad((optional($txn)->number+1), $settings->minimum_number_length, "0", STR_PAD_LEFT)).$settings->number_postfix;
-    }
-
     public function create()
     {
         //load the vue version of the app
@@ -71,7 +63,7 @@ class SalesOrderController extends Controller
 
         $txnAttributes = (new SalesOrder())->rgGetAttributes();
 
-        $txnAttributes['number'] = $this->nextNumber();
+        $txnAttributes['number'] = SalesOrderService::nextNumber();
         $txnAttributes['status'] = 'approved';
         $txnAttributes['contact_id'] = '';
         $txnAttributes['contact'] = json_decode('{"currencies":[]}'); #required

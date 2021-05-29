@@ -29,10 +29,7 @@ class CreateRgSalesOrdersTable extends Migration
             $table->unsignedBigInteger('parent_id');
             $table->unsignedBigInteger('app_id');
             $table->string('document_name', 50)->default('Sales Order');
-            $table->string('number_prefix', 50)->nullable();
-            $table->unsignedBigInteger('number');
-            $table->unsignedTinyInteger('number_length');
-            $table->string('number_postfix', 50)->nullable();
+            $table->string('number', 250);
             $table->date('date');
             $table->time('time');
             $table->unsignedBigInteger('financial_account_code')->nullable();
@@ -53,7 +50,7 @@ class CreateRgSalesOrdersTable extends Migration
             $table->string('status', 20)->nullable();
             $table->unsignedTinyInteger('sent')->nullable();
             $table->unsignedBigInteger('salesperson_id')->nullable();
-            $table->string('memo', 250)->nullable();
+            $table->string('contact_notes', 250)->nullable();
             $table->string('terms_and_conditions', 250)->nullable();
 
         });

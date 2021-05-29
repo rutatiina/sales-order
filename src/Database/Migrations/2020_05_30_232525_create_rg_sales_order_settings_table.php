@@ -30,7 +30,7 @@ class CreateRgSalesOrderSettingsTable extends Migration
             $table->enum('document_type', ['inventory', 'invoice', 'bill', 'receipt', 'payment', 'other', 'tax', 'discount', 'order'])->nullable();
             $table->string('number_prefix', 20)->nullable();
             $table->string('number_postfix', 20)->nullable();
-            $table->unsignedTinyInteger('minimum_number_length')->default(3); //the number length should always be padded if bellow this value e.g. 3 means 001/022/ 1234
+            $table->unsignedTinyInteger('minimum_number_length')->default(5); //the number length should always be padded if bellow this value e.g. 3 means 001/022/ 1234
             $table->unsignedBigInteger('minimum_number')->default(1)->nullable();
             $table->unsignedBigInteger('maximum_number')->nullable();
 

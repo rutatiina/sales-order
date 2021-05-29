@@ -61,7 +61,6 @@ class SalesOrder extends Model
                 $row->delete();
              });
         });
-
     }
 
     public function rgGetAttributes()
@@ -95,6 +94,11 @@ class SalesOrder extends Model
         $attributes['contact'] = [];
 
         return $attributes;
+    }
+
+    public function setStatusAttribute($value)
+    {
+        $this->attributes['status'] = strtolower($value);
     }
 
     public function getContactAddressArrayAttribute()
