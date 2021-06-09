@@ -2,7 +2,6 @@
 
 namespace Rutatiina\SalesOrder\Http\Controllers;
 
-use Rutatiina\SalesOrder\Models\Setting;
 use Rutatiina\SalesOrder\Services\SalesOrderService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
@@ -148,14 +147,12 @@ class SalesOrderController extends Controller
 
         $txnAttributes = SalesOrderService::edit($id);
 
-        $data = [
+        return [
             'pageTitle' => 'Edit Sales order', #required
             'pageAction' => 'Edit', #required
             'txnUrlStore' => '/sales-orders/' . $id, #required
             'txnAttributes' => $txnAttributes, #required
         ];
-
-        return $data;
     }
 
     public function update(Request $request)
@@ -231,14 +228,12 @@ class SalesOrderController extends Controller
 
         $txnAttributes = SalesOrderService::copy($id);
 
-        $data = [
+        return [
             'pageTitle' => 'Copy Sales order', #required
             'pageAction' => 'Copy', #required
             'txnUrlStore' => '/sales-orders', #required
             'txnAttributes' => $txnAttributes, #required
         ];
-
-        return $data;
     }
 
     public function process()

@@ -32,7 +32,7 @@ class ValidateService
             'base_currency' => 'required',
             'expiry_date' => 'date|nullable',
             'salesperson_contact_id' => 'numeric|nullable',
-            'memo' => 'string|nullable',
+            'contact_notes' => 'string|nullable',
 
             'items' => 'required|array',
             'items.*.name' => 'required_without:type_id',
