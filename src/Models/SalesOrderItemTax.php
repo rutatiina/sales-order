@@ -36,16 +36,6 @@ class SalesOrderItemTax extends Model
         static::addGlobalScope(new TenantIdScope);
     }
 
-    public function getTaxesAttribute($value)
-    {
-        $_array_ = json_decode($value);
-        if (is_array($_array_)) {
-            return $_array_;
-        } else {
-            return [];
-        }
-    }
-
     public function tax()
     {
         return $this->hasOne('Rutatiina\Tax\Models\Tax', 'code', 'tax_code');
