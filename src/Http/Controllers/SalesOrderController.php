@@ -39,8 +39,7 @@ class SalesOrderController extends Controller
         if ($request->contact)
         {
             $query->where(function($q) use ($request) {
-                $q->where('debit_contact_id', $request->contact);
-                $q->orWhere('credit_contact_id', $request->contact);
+                $q->where('contact_id', $request->contact);
             });
         }
 
@@ -81,19 +80,12 @@ class SalesOrderController extends Controller
         $txnAttributes['terms_and_conditions'] = null;
         $txnAttributes['items'] = [$this->itemCreate()];
 
-        unset($txnAttributes['txn_entree_id']); //!important
-        unset($txnAttributes['txn_type_id']); //!important
-        unset($txnAttributes['debit_contact_id']); //!important
-        unset($txnAttributes['credit_contact_id']); //!important
-
-        $data = [
+        return [
             'pageTitle' => 'Create Sales Order', #required
             'pageAction' => 'Create', #required
             'txnUrlStore' => '/sales-orders', #required
             'txnAttributes' => $txnAttributes, #required
         ];
-
-        return $data;
     }
 
     public function store(Request $request)
