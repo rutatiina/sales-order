@@ -3,22 +3,18 @@
 namespace Rutatiina\SalesOrder\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Rutatiina\SalesOrder\Models\Setting;
+use Rutatiina\SalesOrder\Models\SalesOrderSetting;
 use Rutatiina\FinancialAccounting\Traits\FinancialAccountingTrait;
 use Rutatiina\Item\Traits\ItemsVueSearchSelect;
-use Yajra\DataTables\Facades\DataTables;
 use Rutatiina\FinancialAccounting\Models\Account;
 
-class SettingsController extends Controller
+class SalesOrderSettingsController extends Controller
 {
     use FinancialAccountingTrait;
     use ItemsVueSearchSelect;
-
-    private  $txnEntreeSlug = 'offer';
 
     public function __construct()
     {
@@ -37,7 +33,7 @@ class SettingsController extends Controller
 
         return [
             'financial_accounts' => Account::all(),
-            'settings' => Setting::first()
+            'settings' => SalesOrderSetting::first()
         ];
     }
 
@@ -65,7 +61,7 @@ class SettingsController extends Controller
         }
 
         //save data posted
-        $settings = Setting::first();
+        $settings = SalesOrderSetting::first();
         $settings->document_name = $request->document_name;
         $settings->number_prefix = $request->number_prefix;
         $settings->number_postfix = $request->number_postfix;

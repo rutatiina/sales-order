@@ -4,7 +4,7 @@ namespace Rutatiina\SalesOrder\Services;
 
 use Illuminate\Support\Facades\Validator;
 use Rutatiina\Contact\Models\Contact;
-use Rutatiina\SalesOrder\Models\Setting;
+use Rutatiina\SalesOrder\Models\SalesOrderSetting;
 
 class ValidateService
 {
@@ -57,7 +57,7 @@ class ValidateService
 
         // << data validation <<------------------------------------------------------------
 
-        $settings = Setting::has('financial_account')->with(['financial_account'])->firstOrFail();
+        $settings = SalesOrderSetting::has('financial_account')->with(['financial_account'])->firstOrFail();
         //Log::info($this->settings);
 
 

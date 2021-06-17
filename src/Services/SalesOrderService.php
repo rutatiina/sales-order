@@ -11,7 +11,7 @@ use Rutatiina\SalesOrder\Models\SalesOrderItem;
 use Rutatiina\SalesOrder\Models\SalesOrderItemTax;
 use Rutatiina\FinancialAccounting\Services\AccountBalanceUpdateService;
 use Rutatiina\FinancialAccounting\Services\ContactBalanceUpdateService;
-use Rutatiina\SalesOrder\Models\Setting;
+use Rutatiina\SalesOrder\Models\SalesOrderSetting;
 use Rutatiina\Tax\Models\Tax;
 
 class SalesOrderService
@@ -26,7 +26,7 @@ class SalesOrderService
     public static function nextNumber()
     {
         $count = SalesOrder::count();
-        $settings = Setting::first();
+        $settings = SalesOrderSetting::first();
 
         return $settings->number_prefix . (str_pad(($count + 1), $settings->minimum_number_length, "0", STR_PAD_LEFT)) . $settings->number_postfix;
     }

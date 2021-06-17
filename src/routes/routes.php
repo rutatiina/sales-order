@@ -11,7 +11,7 @@ Route::group(['middleware' => ['web', 'auth', 'tenant', 'service.accounting']], 
 
     });
 
-    Route::resource('sales-orders/settings', 'Rutatiina\SalesOrder\Http\Controllers\SettingsController');
+    Route::resource('sales-orders/settings', 'Rutatiina\SalesOrder\Http\Controllers\SalesOrderSettingsController');
     Route::resource('sales-orders', 'Rutatiina\SalesOrder\Http\Controllers\SalesOrderController');
 
 });
