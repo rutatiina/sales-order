@@ -70,9 +70,4 @@ class SalesOrderSetting extends Model
         return $attributes;
     }
 
-    public function financial_account()
-    {
-        return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'code', 'financial_account_code');
-    }
-
 }

@@ -32,7 +32,6 @@ class CreateRgSalesOrdersTable extends Migration
             $table->string('number', 250);
             $table->date('date');
             $table->time('time');
-            $table->unsignedBigInteger('financial_account_code')->nullable();
             $table->unsignedBigInteger('contact_id');
             $table->string('contact_name', 50);
             $table->string('contact_address', 50);

@@ -34,8 +34,6 @@ class CreateRgSalesOrderSettingsTable extends Migration
             $table->unsignedBigInteger('minimum_number')->default(1)->nullable();
             $table->unsignedBigInteger('maximum_number')->nullable();
 
-            $table->unsignedBigInteger('financial_account_code')->nullable();
-
         });
     }
 

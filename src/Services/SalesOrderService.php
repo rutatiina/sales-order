@@ -81,11 +81,11 @@ class SalesOrderService
 
     public static function store($requestInstance)
     {
-        $data = ValidateService::run($requestInstance);
+        $data = SalesOrderValidateService::run($requestInstance);
         //print_r($data); exit;
         if ($data === false)
         {
-            self::$errors = ValidateService::$errors;
+            self::$errors = SalesOrderValidateService::$errors;
             return false;
         }
 
@@ -101,7 +101,6 @@ class SalesOrderService
             $Txn->document_name = $data['document_name'];
             $Txn->number = $data['number'];
             $Txn->date = $data['date'];
-            $Txn->financial_account_code = $data['financial_account_code'];
             $Txn->contact_id = $data['contact_id'];
             $Txn->contact_name = $data['contact_name'];
             $Txn->contact_address = $data['contact_address'];
@@ -127,8 +126,8 @@ class SalesOrderService
             //Save the items >> $data['items']
             SalesOrderItemService::store($data);
 
-            //check status and update financial account and contact balances accordingly
-            ApprovalService::run($data);
+            //check status and update balances accordingly
+            SalesOrderBalanceService::update($Txn);
 
             DB::connection('tenant')->commit();
 
@@ -163,11 +162,11 @@ class SalesOrderService
 
     public static function update($requestInstance)
     {
-        $data = ValidateService::run($requestInstance);
+        $data = SalesOrderValidateService::run($requestInstance);
         //print_r($data); exit;
         if ($data === false)
         {
-            self::$errors = ValidateService::$errors;
+            self::$errors = SalesOrderValidateService::$errors;
             return false;
         }
 
@@ -184,55 +183,20 @@ class SalesOrderService
                 return false;
             }
 
+            //reverse the balances
+            SalesOrderBalanceService::update($Txn, true);
+
             //Delete affected relations
             $Txn->items()->delete();
             $Txn->item_taxes()->delete();
             $Txn->comments()->delete();
+            $Txn->delete();
 
-            //reverse the account balances
-            AccountBalanceUpdateService::singleEntry($Txn, true);
-
-            //reverse the contact balances
-            ContactBalanceUpdateService::singleEntry($Txn, true);
-
-            $Txn->tenant_id = $data['tenant_id'];
-            $Txn->created_by = Auth::id();
-            $Txn->document_name = $data['document_name'];
-            $Txn->number = $data['number'];
-            $Txn->date = $data['date'];
-            $Txn->financial_account_code = $data['financial_account_code'];
-            $Txn->contact_id = $data['contact_id'];
-            $Txn->contact_name = $data['contact_name'];
-            $Txn->contact_address = $data['contact_address'];
-            $Txn->reference = $data['reference'];
-            $Txn->base_currency = $data['base_currency'];
-            $Txn->quote_currency = $data['quote_currency'];
-            $Txn->exchange_rate = $data['exchange_rate'];
-            $Txn->taxable_amount = $data['taxable_amount'];
-            $Txn->total = $data['total'];
-            $Txn->branch_id = $data['branch_id'];
-            $Txn->store_id = $data['store_id'];
-            $Txn->expiry_date = $data['expiry_date'];
-            $Txn->contact_notes = $data['contact_notes'];
-            $Txn->terms_and_conditions = $data['terms_and_conditions'];
-            $Txn->status = $data['status'];
-
-            $Txn->save();
-
-            $data['id'] = $Txn->id;
-
-            //print_r($data['items']); exit;
-
-            //Save the items >> $data['items']
-            SalesOrderItemService::store($data);
-
-            //check status and update financial account and contact balances accordingly
-            ApprovalService::run($data);
+            $txnStore = self::store($requestInstance);
 
             DB::connection('tenant')->commit();
 
-            return $Txn;
-
+            return $txnStore;
         }
         catch (\Throwable $e)
         {
@@ -256,7 +220,6 @@ class SalesOrderService
 
             return false;
         }
-
     }
 
     public static function destroy($id)
@@ -270,22 +233,16 @@ class SalesOrderService
 
             if ($Txn->status == 'Approved')
             {
-                self::$errors[] = 'Approved Transaction cannot be not be deleted';
+                self::$errors[] = 'Approved sales order cannot be not be deleted';
                 return false;
             }
+
+            //reverse the balances
+            SalesOrderBalanceService::update($Txn, true);
 
             //Delete affected relations
             $Txn->items()->delete();
             $Txn->item_taxes()->delete();
-
-            $data = $Txn->toArray();
-
-            //reverse the account balances
-            AccountBalanceUpdateService::singleEntry($data, true);
-
-            //reverse the contact balances
-            ContactBalanceUpdateService::singleEntry($data, true);
-
             $Txn->delete();
 
             DB::connection('tenant')->commit();
@@ -376,15 +333,13 @@ class SalesOrderService
             return false;
         }
 
-        $data = $Txn->toArray();
-
         //start database transaction
         DB::connection('tenant')->beginTransaction();
 
         try
         {
-            $data['status'] = 'approved';
-            $approvalService = ApprovalService::run($data);
+            $Txn->status = 'approved';
+            $approvalService = SalesOrderBalanceService::update($Txn);
 
             //update the status of the txn
             if ($approvalService)
