@@ -177,9 +177,9 @@ class SalesOrderService
         {
             $Txn = SalesOrder::with('items')->findOrFail($data['id']);
 
-            if ($Txn->status == 'Approved')
+            if ($Txn->status == 'approved')
             {
-                self::$errors[] = 'Approved Transaction cannot be not be edited';
+                self::$errors[] = 'Approved sales order cannot be not be edited';
                 return false;
             }
 
@@ -339,15 +339,7 @@ class SalesOrderService
         try
         {
             $Txn->status = 'approved';
-            $approvalService = SalesOrderBalanceService::update($Txn);
-
-            //update the status of the txn
-            if ($approvalService)
-            {
-                $Txn->status = 'approved';
-                $Txn->balances_where_updated = 1;
-                $Txn->save();
-            }
+            SalesOrderBalanceService::update($Txn);
 
             DB::connection('tenant')->commit();
 
@@ -361,14 +353,14 @@ class SalesOrderService
 
             if (App::environment('local'))
             {
-                self::$errors[] = 'DB Error: Failed to approve transaction.';
+                self::$errors[] = 'DB Error: Failed to approve sales order.';
                 self::$errors[] = 'File: ' . $e->getFile();
                 self::$errors[] = 'Line: ' . $e->getLine();
                 self::$errors[] = 'Message: ' . $e->getMessage();
             }
             else
             {
-                self::$errors[] = 'Fatal Internal Error: Failed to approve transaction. Please contact Admin';
+                self::$errors[] = 'Fatal Internal Error: Failed to approve sales order. Please contact Admin';
             }
 
             return false;
