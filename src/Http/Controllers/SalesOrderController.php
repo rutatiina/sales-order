@@ -124,6 +124,7 @@ class SalesOrderController extends Controller
             'taxes',
             'number_string',
             'total_in_words',
+            'payment_details'
         ]);
 
         return $txn->toArray();

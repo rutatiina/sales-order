@@ -3,8 +3,9 @@
 namespace Rutatiina\SalesOrder\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Rutatiina\Tenant\Scopes\TenantIdScope;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Rutatiina\Tenant\Models\TenantPaymentDetail;
 
 class SalesOrder extends Model
 {
@@ -158,6 +159,11 @@ class SalesOrder extends Model
             }
         }
         return $grouped;
+    }
+
+    public function getPaymentDetailsAttribute()
+    {
+        return TenantPaymentDetail::where('document', 'sales-order')->get();
     }
 
 }
