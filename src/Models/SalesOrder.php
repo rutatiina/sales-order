@@ -5,10 +5,12 @@ namespace Rutatiina\SalesOrder\Models;
 use Illuminate\Database\Eloquent\Model;
 use Rutatiina\Tenant\Scopes\TenantIdScope;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Rutatiina\Tenant\Models\TenantPaymentDetail;
 
 class SalesOrder extends Model
 {
+    use SoftDeletes;
     use LogsActivity;
 
     protected static $logName = 'Txn';
@@ -51,12 +53,21 @@ class SalesOrder extends Model
 
         static::addGlobalScope(new TenantIdScope);
 
-        self::deleting(function($txn) { // before delete() method call this
+        self::deleted(function($txn) { // before delete() method call this
              $txn->items()->each(function($row) {
                 $row->delete();
              });
              $txn->comments()->each(function($row) {
                 $row->delete();
+             });
+        });
+
+        self::restored(function($txn) { // before delete() method call this
+             $txn->items()->each(function($row) {
+                $row->restore();
+             });
+             $txn->comments()->each(function($row) {
+                $row->restore();
              });
         });
     }
