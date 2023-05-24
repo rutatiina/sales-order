@@ -102,7 +102,6 @@ class SalesOrder extends Model
         $attributes['debit_account'] = [];
         $attributes['credit_account'] = [];
         $attributes['items'] = [];
-        $attributes['ledgers'] = [];
         $attributes['comments'] = [];
         $attributes['contact'] = [];
 

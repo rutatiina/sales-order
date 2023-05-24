@@ -12,12 +12,9 @@ use Rutatiina\SalesOrder\Models\SalesOrder;
 use Rutatiina\Contact\Traits\ContactTrait;
 use Yajra\DataTables\Facades\DataTables;
 
-use Rutatiina\SalesOrder\Traits\Item as TxnItem;
-
 class SalesOrderController extends Controller
 {
     use ContactTrait;
-    use TxnItem; // >> get the item attributes template << !!important
 
     public function __construct()
     {
@@ -78,7 +75,27 @@ class SalesOrderController extends Controller
         ];
         $txnAttributes['contact_notes'] = null;
         $txnAttributes['terms_and_conditions'] = null;
-        $txnAttributes['items'] = [$this->itemCreate()];
+        $txnAttributes['items'] = [
+            [
+                'selectedTaxes' => [], #required
+                'selectedItem' => json_decode('{}'), #required
+                'displayTotal' => 0,
+                'name' => '',
+                'description' => '',
+                'rate' => 0,
+                'quantity' => 1,
+                'total' => 0,
+                'taxes' => [],
+    
+                'type' => '',
+                'type_id' => '',
+                'contact_id' => '',
+                'tax_id' => '',
+                'units' => '',
+                'batch' => '',
+                'expiry' => ''
+            ]
+        ];
 
         return [
             'pageTitle' => 'Create Sales Order', #required
