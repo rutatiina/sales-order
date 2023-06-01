@@ -49,7 +49,7 @@ class CreateRgSalesOrdersTable extends Migration
             $table->string('status', 20)->nullable();
             $table->unsignedTinyInteger('sent')->nullable();
             $table->unsignedBigInteger('salesperson_id')->nullable();
-            $table->string('contact_notes', 250)->nullable();
+            $table->string('memo', 250)->nullable();
             $table->string('terms_and_conditions', 250)->nullable();
 
         });

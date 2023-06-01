@@ -33,7 +33,7 @@ class SalesOrderValidateService
             'base_currency' => 'required',
             'expiry_date' => 'date|nullable',
             'salesperson_contact_id' => 'numeric|nullable',
-            'contact_notes' => 'string|nullable',
+            'memo' => 'string|nullable',
 
             'items' => 'required|array',
             'items.*.name' => 'required_without:type_id',
@@ -86,7 +86,7 @@ class SalesOrderValidateService
         $data['store_id'] = $requestInstance->input('store_id', null);
         $data['expiry_date'] = $requestInstance->input('expiry_date', null);
         $data['terms_and_conditions'] = $requestInstance->input('terms_and_conditions', null);
-        $data['contact_notes'] = $requestInstance->input('contact_notes', null);
+        $data['memo'] = $requestInstance->input('memo', null);
         $data['status'] = $requestInstance->input('status', null);
 
         //print_r($data); exit;

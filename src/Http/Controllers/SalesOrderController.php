@@ -73,7 +73,7 @@ class SalesOrderController extends Controller
             'month' => '*',
             'day_of_week' => '*',
         ];
-        $txnAttributes['contact_notes'] = null;
+        $txnAttributes['memo'] = null;
         $txnAttributes['terms_and_conditions'] = null;
         $txnAttributes['items'] = [
             [

@@ -114,7 +114,7 @@ class SalesOrderService
             $Txn->branch_id = $data['branch_id'];
             $Txn->store_id = $data['store_id'];
             $Txn->expiry_date = $data['expiry_date'];
-            $Txn->contact_notes = $data['contact_notes'];
+            $Txn->memo = $data['memo'];
             $Txn->terms_and_conditions = $data['terms_and_conditions'];
             $Txn->status = $data['status'];
 
